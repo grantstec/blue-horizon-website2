@@ -37,3 +37,123 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* Add this to your globals.css */
+
+/* Enhanced smooth scrolling */
+html {
+  scroll-behavior: smooth;
+  scroll-snap-type: y mandatory;
+}
+
+/* Custom scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 51, 160, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 51, 160, 0.6);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 51, 160, 0.8);
+}
+
+/* Scroll snap points */
+.scroll-snap-start {
+  scroll-snap-align: start;
+}
+
+.scroll-snap-center {
+  scroll-snap-align: center;
+}
+
+/* Performance optimizations for animations */
+.smooth-transform {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* Parallax container */
+.parallax-container {
+  height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+}
+
+/* Section transitions */
+.section-transition {
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Floating elements */
+.floating-nav {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Smooth opacity transitions */
+.fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Rocket trail animation */
+@keyframes rocketTrail {
+  0% {
+    transform: scaleY(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scaleY(0.5);
+    opacity: 0.3;
+  }
+  100% {
+    transform: scaleY(1);
+    opacity: 0.8;
+  }
+}
+
+.rocket-trail {
+  animation: rocketTrail 0.5s ease-in-out infinite;
+}
+
+/* Mouse wheel smoothing */
+.smooth-scroll {
+  scroll-behavior: smooth;
+  overscroll-behavior: none;
+}
+
+/* Enhanced text animations */
+.text-glow {
+  text-shadow: 0 0 20px rgba(0, 51, 160, 0.5);
+}
+
+/* Responsive scroll snap adjustments */
+@media (max-width: 768px) {
+  html {
+    scroll-snap-type: none;
+  }
+  
+  .scroll-snap-start {
+    scroll-snap-align: none;
+  }
+}
