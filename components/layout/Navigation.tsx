@@ -3,6 +3,17 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDownIcon } from 'lucide-react';
+import { createNavigationVariants, dropdown, hoverScale, tapScale } from '../../utils/animations';
+
+// === EDITABLE STYLE CONSTANTS ===
+const STYLES = {
+  textSize: "text-lg sm:text-xl lg:text-2xl",
+  spacing: "lg:space-x-6 xl:space-x-12",
+  hoverColor: "text-[#0033a0]", 
+  activeColor: "text-[#0033a0]",
+  dropdownTextSize: "text-base lg:text-lg",
+  textTracking: "tracking-wider"
+};
 
 interface DropdownItem {
   name: string;
@@ -46,78 +57,7 @@ const Navigation: React.FC = () => {
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
-  // Animation variants for staggered navigation items
-  const containerVariants = {
-    hidden: {},
-    visible: {
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.5
-      }
-    }
-  };
-
-  // Each item starts from the same position (stacked) but with different durations
-  const getItemVariants = (index: number) => ({
-    hidden: {
-      x: -800, // All start from same off-screen position
-      y: 0,    // All on same y-axis (stacked)
-      opacity: 0
-    },
-    visible: {
-      x: 0,
-      y: 0,
-      opacity: 1,
-      transition: {
-        duration: 2 - (index * 0.2), // Earlier items move slower, later ones faster
-        ease: [0.25, 0.46, 0.45, 0.94],
-        delay: index * 0.1 // Small stagger delay
-      }
-    }
-  });
-
-  // Dropdown animation variants
-  const dropdownContainerVariants = {
-    hidden: {
-      opacity: 0,
-      height: 0
-    },
-    visible: {
-      opacity: 1,
-      height: "auto",
-      transition: {
-        duration: 0.3,
-        ease: "easeOut",
-        staggerChildren: 0.05,
-        delayChildren: 0.1
-      }
-    },
-    exit: {
-      opacity: 0,
-      height: 0,
-      transition: {
-        duration: 0.2,
-        ease: "easeIn"
-      }
-    }
-  };
-
-  const dropdownItemVariants = {
-    hidden: {
-      y: -20,
-      x: 0, // Start stacked at the parent's x position
-      opacity: 0
-    },
-    visible: {
-      y: 0,
-      x: 0,
-      opacity: 1,
-      transition: {
-        duration: 0.3,
-        ease: [0.25, 0.46, 0.45, 0.94]
-      }
-    }
-  };
+  const navVariants = createNavigationVariants(navigationItems.length);
 
   const handleMouseEnter = (itemName: string, hasDropdown: boolean) => {
     setHoveredItem(itemName);
@@ -134,8 +74,8 @@ const Navigation: React.FC = () => {
   return (
     <nav className="relative">
       <motion.ul
-        className="flex flex-col lg:flex-row items-center lg:space-x-6 xl:space-x-12 space-y-4 lg:space-y-0"
-        variants={containerVariants}
+        className={`flex flex-col lg:flex-row items-center ${STYLES.spacing} space-y-4 lg:space-y-0`}
+        variants={navVariants.container}
         initial="hidden"
         animate="visible"
       >
@@ -143,7 +83,8 @@ const Navigation: React.FC = () => {
           <motion.li
             key={item.name}
             className="relative"
-            variants={getItemVariants(index)}
+            custom={index}
+            variants={navVariants.item}
             onMouseEnter={() => handleMouseEnter(item.name, item.hasDropdown || false)}
             onMouseLeave={handleMouseLeave}
           >
@@ -151,15 +92,14 @@ const Navigation: React.FC = () => {
             <motion.a
               href={item.href}
               className={`
-                flex items-center px-2 py-1 cursor-pointer transition-all duration-300
-                font-mono font-normal text-lg sm:text-xl lg:text-2xl 
-                tracking-wider leading-normal whitespace-nowrap
-                drop-shadow-lg hover:scale-105
-                ${hoveredItem === item.name ? 'text-[#0033a0]' : 'text-white'}
-                ${item.active ? 'text-[#0033a0]' : ''}
+                flex items-center px-2 py-1 cursor-pointer transition-colors duration-300
+                font-normal ${STYLES.textSize} ${STYLES.textTracking} leading-normal whitespace-nowrap
+                drop-shadow-lg text-white
+                ${hoveredItem === item.name ? STYLES.hoverColor : ''}
+                ${item.active ? STYLES.activeColor : ''}
               `}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={hoverScale}
+              whileTap={tapScale}
             >
               {item.name}
               {item.hasDropdown && (
@@ -177,21 +117,23 @@ const Navigation: React.FC = () => {
               {item.hasDropdown && activeDropdown === item.name && (
                 <motion.div
                   className="absolute top-full left-0 mt-2 z-50 min-w-[180px]"
-                  variants={dropdownContainerVariants}
+                  variants={dropdown.container}
                   initial="hidden"
                   animate="visible"
                   exit="exit"
                 >
-                  <div className="bg-transparent rounded-lg shadow-none overflow-visible">
+                  <div className="bg-transparent rounded-lg overflow-visible">
                     {item.dropdownItems?.map((dropdownItem) => (
                       <motion.a
                         key={dropdownItem.name}
                         href={dropdownItem.href}
-                        className="
-                          block px-2 py-1 text-white hover:text-[#0033a0] cursor-pointer transition-all duration-300 
-                          font-mono text-base lg:text-lg tracking-wide 
-                        "
-                        variants={dropdownItemVariants}
+                        className={`
+                          block px-2 py-1 text-white hover:${STYLES.hoverColor.replace('text-', '')} 
+                          cursor-pointer transition-colors duration-300 ${STYLES.dropdownTextSize} tracking-wide
+                        `}
+                        variants={dropdown.item}
+                        initial="hidden"
+                        animate="visible"
                       >
                         {dropdownItem.name}
                       </motion.a>

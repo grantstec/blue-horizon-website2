@@ -1,10 +1,49 @@
 import { Variants } from 'framer-motion';
-import { designConfig, getNavigationItemTiming } from '../config/design';
+import { CONSTANTS } from '../config/design';
 
-// Slide in from left animation
-export const slideInLeft = (delay = 0, duration = 2): Variants => ({
+// Navigation animations - all items arrive at the same time but start at different times
+export const createNavigationVariants = () => {
+  const baseDuration = 2;
+  const durationDecrement = 0.2;
+  
+  return {
+    container: {
+      hidden: {},
+      visible: {
+        transition: {
+          delayChildren: 0,
+          staggerChildren: 0
+        }
+      }
+    },
+    
+    item: (index: number) => {
+      const duration = baseDuration - (index * durationDecrement);
+      const delay = CONSTANTS.NAV_ARRIVAL_TIME - duration;
+      
+      return {
+        hidden: {
+          x: -800,
+          opacity: 0
+        },
+        visible: {
+          x: 0,
+          opacity: 1,
+          transition: {
+            duration,
+            delay: Math.max(0, delay),
+            ease: CONSTANTS.SMOOTH_EASE
+          }
+        }
+      };
+    }
+  };
+};
+
+// Simple slide in from left
+export const slideInLeft = (delay: number = 0, duration: number = 2): Variants => ({
   hidden: {
-    x: designConfig.startPositions.logo.x,
+    x: -400,
     opacity: 0
   },
   visible: {
@@ -13,123 +52,71 @@ export const slideInLeft = (delay = 0, duration = 2): Variants => ({
     transition: {
       duration,
       delay,
-      ease: designConfig.animations.logo.easing
+      ease: CONSTANTS.SMOOTH_EASE
     }
   }
 });
 
-// Staggered navigation animation
-export const createNavigationItemVariants = (index: number): Variants => {
-  const timing = getNavigationItemTiming(index);
-  
-  return {
+// Hero text animations
+export const heroText = (delay: number = 0, duration: number = 2): Variants => ({
+  hidden: {
+    x: -1000,
+    opacity: 0
+  },
+  visible: {
+    x: 0,
+    opacity: 1,
+    transition: {
+      duration,
+      delay,
+      ease: CONSTANTS.SMOOTH_EASE
+    }
+  }
+});
+
+// Dropdown animations - no stagger, all items at once
+export const dropdown = {
+  container: {
     hidden: {
-      x: designConfig.startPositions.navigation.x,
-      y: 0,
+      opacity: 0,
+      height: 0
+    },
+    visible: {
+      opacity: 1,
+      height: "auto",
+      transition: {
+        duration: 0.3,
+        ease: "easeOut"
+      }
+    },
+    exit: {
+      opacity: 0,
+      height: 0,
+      transition: {
+        duration: 0.2,
+        ease: "easeIn"
+      }
+    }
+  },
+  
+  item: {
+    hidden: {
+      y: -20,
       opacity: 0
     },
     visible: {
-      x: 0,
       y: 0,
       opacity: 1,
-      transition: timing
-    }
-  };
-};
-
-// Container animation for staggered children
-export const staggerContainer = (
-  staggerDelay = 0.1,
-  delayChildren = 0.5
-): Variants => ({
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: staggerDelay,
-      delayChildren
-    }
-  }
-});
-
-// Dropdown animations
-export const dropdownContainer: Variants = {
-  hidden: {
-    opacity: 0,
-    height: 0,
-    scaleY: 0
-  },
-  visible: {
-    opacity: 1,
-    height: "auto",
-    scaleY: 1,
-    transition: {
-      duration: designConfig.animations.dropdown.duration,
-      ease: designConfig.animations.dropdown.easing,
-      staggerChildren: designConfig.animations.dropdown.staggerDelay,
-      delayChildren: 0.1
-    }
-  },
-  exit: {
-    opacity: 0,
-    height: 0,
-    scaleY: 0,
-    transition: {
-      duration: 0.2,
-      ease: "easeIn"
+      transition: {
+        duration: 0.3,
+        ease: CONSTANTS.SMOOTH_EASE
+      }
     }
   }
 };
 
-export const dropdownItem: Variants = {
-  hidden: {
-    y: designConfig.startPositions.dropdown.y,
-    opacity: 0
-  },
-  visible: {
-    y: 0,
-    opacity: 1,
-    transition: {
-      duration: 0.3,
-      ease: designConfig.animations.dropdown.easing
-    }
-  }
-};
-
-// Hero section animations
-export const heroTitle: Variants = {
-  hidden: {
-    x: designConfig.startPositions.hero.x,
-    opacity: 0
-  },
-  visible: {
-    x: 0,
-    opacity: 1,
-    transition: {
-      duration: designConfig.animations.hero.duration,
-      ease: designConfig.animations.hero.easing,
-      delay: designConfig.animations.hero.titleDelay
-    }
-  }
-};
-
-export const heroSubtitle: Variants = {
-  hidden: {
-    x: designConfig.startPositions.hero.x,
-    opacity: 0
-  },
-  visible: {
-    x: 0,
-    opacity: 1,
-    transition: {
-      duration: designConfig.animations.hero.duration,
-      ease: designConfig.animations.hero.easing,
-      delay: designConfig.animations.hero.subtitleDelay
-    }
-  }
-};
-
-// Scroll indicator animation
-export const scrollIndicator: Variants = {
+// Fade in animation
+export const fadeIn = (delay: number = 0, duration: number = 1): Variants => ({
   hidden: {
     opacity: 0,
     y: 20
@@ -138,41 +125,18 @@ export const scrollIndicator: Variants = {
     opacity: 1,
     y: 0,
     transition: {
-      delay: designConfig.animations.scrollIndicator.delay,
-      duration: designConfig.animations.scrollIndicator.duration
+      delay,
+      duration
     }
   }
-};
+});
 
-// Bounce animation for scroll indicator
-export const bounceAnimation = {
-  y: [0, 10, 0],
-  transition: {
-    repeat: designConfig.animations.scrollIndicator.bounceRepeat,
-    duration: designConfig.animations.scrollIndicator.bounceDuration
-  }
-};
-
-// Hover animations
+// Hover effects
 export const hoverScale = {
-  scale: designConfig.effects.hoverScale,
+  scale: 1.05,
   transition: { duration: 0.2 }
 };
 
 export const tapScale = {
-  scale: designConfig.effects.tapScale
+  scale: 0.95
 };
-
-// Fade in animation
-export const fadeIn = (delay = 0, duration = 1): Variants => ({
-  hidden: {
-    opacity: 0
-  },
-  visible: {
-    opacity: 1,
-    transition: {
-      duration,
-      delay
-    }
-  }
-});
