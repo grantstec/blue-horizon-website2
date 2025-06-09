@@ -20,8 +20,11 @@ const navigationItems = [
     hasDropdown: true,
     dropdownItems: [
       { name: "PROPULSION", href: "/teams/propulsion" },
+      { name: "STRUCTURES", href: "/teams/structures" },
+      { name: "AVIONICS", href: "/teams/flight-software" },
+      { name: "CONTROLS", href: "/teams/payloads" },
       { name: "GSE", href: "/teams/gse" },
-      { name: "AVIONICS", href: "/teams/avionics" }
+      { name: "SUPPORT", href: "/teams/avionics" }
     ]
   },
   { 
@@ -29,8 +32,9 @@ const navigationItems = [
     active: false, 
     hasDropdown: true,
     dropdownItems: [
-      { name: "MOJAVE SPINE", href: "/projects/mojave-spine" },
-      { name: "TVC", href: "/projects/tvc" }
+      { name: "SPHINX I", href: "/projects/mojave-spine" },    
+      { name: "SPHINX II", href: "/projects/mojave-spine" },
+      { name: "VIKING", href: "/projects/tvc" }
     ]
   },
   { name: "CONTACT", active: false, hasDropdown: false, href: "/contact" }
@@ -72,7 +76,7 @@ const dropdownSpreadVariants = {
     }
   },
   item: (index: number) => {
-    const SPREAD_Y = 0; // Adjust this based on your item height (font size + padding)
+    const SPREAD_Y = -5; // Adjust this based on your item height (font size + padding)
                         // e.g., if text-base (16px) + py-1 (8px total) = 24px.
     return {
       hidden: {
