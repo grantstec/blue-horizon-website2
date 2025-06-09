@@ -9,8 +9,9 @@ import HeroSection from './HeroSection';
 // === EDITABLE STYLE CONSTANTS ===
 const STYLES = {
   logoSize: "w-10 h-10 sm:w-12 sm:h-12 lg:w-18 lg:h-18 xl:w-24 xl:h-24", // Responsive logo sizing: 64px -> 80px -> 96px -> 112px-128px
-  backgroundOpacity: "opacity-60", // 70% opacity for background fire image overlay
-  showScrollIndicator: true
+  videoOpacity: "opacity-60", // Renamed from backgroundOpacity
+  showScrollIndicator: true,
+  videoSrc: "/video/video.mp4" // Add your video file name here
 };
 
 // Logo animation variants - matches Navigation.tsx spring animation style
@@ -54,9 +55,21 @@ const Header: React.FC = () => {
   return (
     <header className="relative w-full min-h-screen overflow-hidden bg-[#0033a0]">
       {/* Background Layers */}
-      <div className="absolute inset-0 bg-[#0033a0]" />
-      <div className={`absolute inset-0 bg-[url(/fire.png)] bg-cover bg-center ${STYLES.backgroundOpacity}`} />
+      <div className="absolute inset-0 bg-[#00124c]" />
       
+      {/* Video Background */}
+      <div className={`absolute inset-0 ${STYLES.videoOpacity}`}>
+        <video
+          className="w-full h-full object-cover"
+          autoPlay
+          loop
+          muted
+          playsInline
+        >
+          <source src={STYLES.videoSrc} type="video/mp4" />
+          {/* Fallback for browsers that don't support video */}
+        </video>
+      </div>
       {/* Content Container */}
       <div className="relative z-10 flex flex-col h-screen">
         {/* Top Navigation Area */}
