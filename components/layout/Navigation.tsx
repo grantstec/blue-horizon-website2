@@ -5,10 +5,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDownIcon } from 'lucide-react';
 
 const STYLES = {
-  textSize: "text-lg sm:text-xl lg:text-1xl", 
-  spacing: "lg:space-x-5 xl:space-x-12",
-  dropdownTextSize: "text-base lg:text-lg",
-  textTracking: "tracking-wider"
+  textSize: "text-1 sm:text-xl lg:text-1xl", // Responsive text: 18px -> 20px -> 24px  
+  spacing: "lg:space-x-5 xl:space-x-12", // Horizontal spacing between nav items: 20px on lg, 48px on xl
+  dropdownTextSize: "text-sm lg:text-s", // Dropdown text: 16px base, 18px on large screens
+  textTracking: "tracking-wider" // Increased letter spacing for better readability
 };
 
 const navigationItems = [
@@ -50,15 +50,15 @@ const navVariants = {
     }
   },
   item: {
-    hidden: { x: -400, opacity: 0 }, // Start further off-screen
+    hidden: { x: -800, opacity: 0 }, // Start further off-screen
     visible: {
       x: 0,
       opacity: 1,
       transition: {
         type: "spring",
-        stiffness: 25,  // Lower stiffness for a slower, softer spring
+        stiffness: 35,  // Lower stiffness for a slower, softer spring
         damping: 12,   // Adequate damping to prevent too much oscillation
-        mass: 1.5       // Slightly increased mass for a more substantial feel
+        mass: 1       // Slightly increased mass for a more substantial feel
       }
       // Note: 'duration' is not typically used with type: "spring"
       // as the spring's physics (stiffness, damping, mass) determine its natural duration.
@@ -71,35 +71,36 @@ const dropdownSpreadVariants = {
     hidden: {},
     visible: {
       transition: {
-        staggerChildren: 0.04 // Or adjust/remove if you want them to start moving truly simultaneously
+        staggerChildren: 0.04 // Small stagger for near-simultaneous animation start
       }
     }
   },
   item: (index: number) => {
-    const SPREAD_Y = -5; // Adjust this based on your item height (font size + padding)
-                        // e.g., if text-base (16px) + py-1 (8px total) = 24px.
+    const SPREAD_Y = 2; // Vertical spacing between dropdown items in pixels
+                         // Negative value moves items upward for compact layout
+                         // Should match your text height + padding (text-base + py-1 ≈ 24px total)
     return {
       hidden: {
-        y: -40*(index), // CRITICAL: All items start at the same y-position within the container
+        y: -20*(index), // All items start stacked at same position (40px spacing for animation effect)
         opacity: 0,
-        scale: 0.95
+        scale: 0.95 // Slightly smaller during hidden state
       },
       visible: {
-        y: index * SPREAD_Y, // Each item animates to its final vertical position
+        y: index * SPREAD_Y, // Each item animates to its final position with SPREAD_Y spacing
         opacity: 1,
-        scale: 1,
+        scale: 1, // Full size when visible
         transition: {
           type: "spring",
-          stiffness: 150,
-          damping: 25,
-          mass: 0.75
+          stiffness: 150, // Higher stiffness for snappy dropdown animation
+          damping: 25,    // Good damping to prevent overshoot
+          mass: 0.75      // Lighter mass for quick, responsive feel
         }
       },
       exit: {
         opacity: 0,
         scale: 0.9,
-        y: -40*(index),
-        transition: { duration: 0.25, ease: "easeInOut"}
+        y: -20*(index), // Return to stacked position when hiding
+        transition: { duration: 0.3, ease: "easeInOut"}
       }
     };
   }
@@ -130,7 +131,7 @@ const Navigation: React.FC = () => {
         {navigationItems.map((item) => (
           <motion.li
             key={item.name}
-            className="relative" // Parent li is relative for absolute positioning of dropdown
+            className="relative" // Parent li needs relative positioning for absolute dropdown positioning
             variants={navVariants.item}
             onMouseEnter={() => handleMouseEnter(item.name, item.hasDropdown || false)}
             onMouseLeave={handleMouseLeave}
@@ -138,8 +139,8 @@ const Navigation: React.FC = () => {
             <motion.a
               href={item.href}
               className={`
-                flex items-center px-2 py-1 cursor-pointer transition-colors duration-300
-                font-normal ${STYLES.textSize} ${STYLES.textTracking} leading-normal whitespace-nowrap
+                flex items-center px-2 py-1 cursor-pointer transition-colors duration-200
+                font-normal text-1x1 ${STYLES.textTracking} leading-normal whitespace-nowrap
                 drop-shadow-lg text-white hover:text-[#0033a0]
                 ${item.active || hoveredItem === item.name ? 'text-[#0033a0]' : ''}
               `}
@@ -162,12 +163,12 @@ const Navigation: React.FC = () => {
             <AnimatePresence>
               {item.hasDropdown && activeDropdown === item.name && (
                 <motion.div
-                  // className="absolute left-0 flex-col items-start pd " // OLD
-                  className="absolute top-full left-0 z-50" // NEW: top-full positions it below parent. pt-2 for a small gap.
-                                                                // Removed flex-col and items-start.
+                  className="absolute top-full left-0 z-50" // top-full: positions dropdown directly below parent item
+                                                           // left-0: aligns dropdown with left edge of parent
+                                                           // z-50: high z-index ensures dropdown appears above other elements
                   initial="hidden"
                   animate="visible"
-                  exit="hidden" // Consider using "exit" variant from dropdownSpreadVariants if defined
+                  exit="hidden"
                   variants={dropdownSpreadVariants.container}
                 >
                   {item.dropdownItems?.map((dropdownItem, dropIndex) => (
@@ -175,16 +176,18 @@ const Navigation: React.FC = () => {
                       key={dropdownItem.name}
                       href={dropdownItem.href}
                       className={`
-                        block px-4 py-1 text-white hover:text-[#0033a0] // py-1 for some vertical padding on items
+                        block px-1 py-0 text-white hover:text-[#0033a0]
                         cursor-pointer transition-colors duration-300 ${STYLES.dropdownTextSize} tracking-wide
                         font-pcap 
-                      `}
-                      // Ensure SPREAD_Y in dropdownSpreadVariants.item is appropriate for your font size and py-1
-                      variants={dropdownSpreadVariants.item(dropIndex)} // Pass only dropIndex if 'total' isn't used
+                      `} // block: makes link fill full width of container
+                         // px-4 py-1: 16px horizontal, 4px vertical padding (more than nav items)
+                         // tracking-wide: moderate letter spacing for dropdown items
+                         // font-pcap: custom font family
+                      variants={dropdownSpreadVariants.item(dropIndex)}
                       initial="hidden"
                       animate="visible"
-                      exit="exit" // Make sure your item variant has an 'exit' state
-                      whileHover={{ scale: 1.05 }}
+                      exit="exit"
+                      whileHover={{ scale: 1.05 }} // 5% scale increase (less than main nav)
                       whileTap={{ scale: 0.95 }}
                     >
                       {dropdownItem.name}

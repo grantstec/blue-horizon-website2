@@ -5,13 +5,49 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Navigation from './Navigation';
 import HeroSection from './HeroSection';
-import { slideInLeft, fadeIn } from '../../utils/animations';
 
 // === EDITABLE STYLE CONSTANTS ===
 const STYLES = {
-  logoSize: "w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-32",
-  backgroundOpacity: "opacity-70",
+  logoSize: "w-10 h-10 sm:w-12 sm:h-12 lg:w-18 lg:h-18 xl:w-24 xl:h-24", // Responsive logo sizing: 64px -> 80px -> 96px -> 112px-128px
+  backgroundOpacity: "opacity-60", // 70% opacity for background fire image overlay
   showScrollIndicator: true
+};
+
+// Logo animation variants - matches Navigation.tsx spring animation style
+const logoVariants = {
+  hidden: { 
+    x: -400, // Start 400px to the left (off-screen)
+    opacity: 0 
+  },
+  visible: {
+    x: 0, // End at natural position
+    opacity: 1,
+    transition: {
+      type: "spring",
+      stiffness: 20,  // Lower stiffness for slower, softer spring motion
+      damping: 12,    // Prevents excessive oscillation
+      mass: 1      // Slightly heavier feel for substantial movement
+    }
+  }
+};
+
+// Scroll indicator animation variants - spring-based like Navigation.tsx
+const scrollIndicatorVariants = {
+  hidden: { 
+    opacity: 0, 
+    y: 20 // Start 20px below final position
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      stiffness: 100,
+      damping: 20,
+      mass: 1,
+      delay: 3 // Wait 3 seconds before animating in
+    }
+  }
 };
 
 const Header: React.FC = () => {
@@ -24,10 +60,10 @@ const Header: React.FC = () => {
       {/* Content Container */}
       <div className="relative z-10 flex flex-col h-screen">
         {/* Top Navigation Area */}
-        <div className="flex flex-col lg:flex-row items-center lg:items-start lg:justify-between p-4 sm:p-6 lg:p-8 xl:p-12 space-y-6 lg:space-y-0">
+        <div className="flex flex-col lg:flex-row items-center lg:items-start lg:justify-between p-6 sm:p-6 lg:p-8 xl:p-12 space-y-8 lg:space-y-0">
           {/* Logo */}
           <motion.div
-            variants={slideInLeft(0, 2)}
+            variants={logoVariants}
             initial="hidden"
             animate="visible"
             className="flex-shrink-0 order-1 lg:order-1"
@@ -45,31 +81,31 @@ const Header: React.FC = () => {
           </motion.div>
 
           {/* Navigation */}
-          <div className="flex-1 flex justify-center lg:justify-start lg:ml-8 xl:ml-12 order-2 lg:order-2">
+          <div className="flex-1 flex justify-center lg:justify-start lg:ml-8 xl:ml-12 order-2 lg:order-2 pt-2 px-1">
             <Navigation />
           </div>
         </div>
 
         {/* Hero Content */}
-        <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8">
+        <div className="items-center justify-center px-4 sm:px-4 lg:px-6 pt-20 sm:pt-20 lg:pt-22 xl:pt-26 text-left">
           <HeroSection />
         </div>
 
         {/* Scroll Indicator */}
         {STYLES.showScrollIndicator && (
           <motion.div 
-            className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-            variants={fadeIn(3, 1)}
+            className="absolute bottom-8 left-1/2 transform -translate-x-1/2" // Absolutely positioned at bottom center
+            variants={scrollIndicatorVariants}
             initial="hidden"
             animate="visible"
           >
             <motion.div
-              animate={{ y: [0, 10, 0] }}
-              transition={{ repeat: Infinity, duration: 2 }}
-              className="w-6 h-6 text-white cursor-pointer"
+              animate={{ y: [0, 10, 0] }} // Continuous bouncing animation: up -> down -> up
+              transition={{ repeat: Infinity, duration: 2 }} // Infinite loop, 2 seconds per cycle
+              className="w-5 h-5 text-white cursor-pointer" // 24x24px white SVG icon
             >
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
               </svg>
             </motion.div>
           </motion.div>
