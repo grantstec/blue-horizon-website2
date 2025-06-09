@@ -1,11 +1,25 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: 'PCap Terminal';
+  src: url('/fonts/PCap-Terminal.woff2') format('woff2'),
+       url('/fonts/PCap-Terminal.woff') format('woff'),
+       url('/fonts/PCap-Terminal.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+.font-pcap {
+  font-family: 'PCap Terminal', monospace;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
 }
 
-@theme inline {
+:root {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -22,5 +36,5 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Pcap Terminal', monospace;
 }
